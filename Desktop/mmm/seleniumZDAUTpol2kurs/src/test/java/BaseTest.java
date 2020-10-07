@@ -1,20 +1,21 @@
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class BaseTest {
 
     WebDriver driver;
+    WebDriverWait wait;
 
-    public void highElement(WebDriver driver, WebElement element){
+    public void highlightElement(WebDriver driver, WebElement element){
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("arguments[0].setAttribute('style', 'background: green; border: 3px solid blue;');", element);
     }
@@ -24,14 +25,15 @@ public class BaseTest {
        System.setProperty("webdriver.chrome.driver","C:\\chromedriver\\chromedriver.exe");
        driver = new ChromeDriver();
        driver.manage().window().maximize();
+       String devToUrl = "https://dev.to";
+        driver.get(devToUrl);
+        wait = new WebDriverWait(driver, 20);
     }
     @Test
     public void firsttest(){
-        String devToUrl = "https://dev.to";
-        driver.get(devToUrl);
+
         WebElement week = driver.findElement(By.xpath("//a[@href='/top/week']"));
         week.click();
-        WebDriverWait wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.urlToBe("https://dev.to/top/week"));
         WebElement firstPostOnWeek = driver.findElement(By.cssSelector("h2.crayons-story__title > a" ));
         String firstPostOnWeekText = firstPostOnWeek.getText();
@@ -49,5 +51,33 @@ public class BaseTest {
 
     }
 
+    @Test
+    public void searchBarTesting() {
+        WebElement searchBox = driver.findElement(By.id("nav-search"));
+        highlightElement(driver, searchBox);
+        String searchText = "testing";
+        searchBox.sendKeys(searchText);
+        searchBox.sendKeys(Keys.ENTER);
+        String searchUrl = "https://dev.to/search?q=";
+        String searchingUrlWithText = searchUrl + searchText;
+        wait.until(ExpectedConditions.urlToBe(searchingUrlWithText));
+        List<WebElement> postTilesList = driver.findElements(By.cssSelector("h2.crayons-story__title > a"));
+
+//        for(int i = 0; i<3; i++){
+//            WebElement element = postTilesList.get(i);
+//            String elementText = element.getText();
+//
+//            assertTrue("there's no searching value in post tile", elementText.contains(searchText));
+//        }
+
+        WebElement element = postTilesList.get(0);
+        String elementText = element.getText();
+        assertTrue("there's no searching value in post tile", elementText.contains(searchText));
+    }
+
+
 
 }
+
+
+
