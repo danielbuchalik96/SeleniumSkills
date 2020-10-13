@@ -40,6 +40,7 @@ public class BaseTest {
         String firstPostLink = firstPostOnWeek.getAttribute("href");
         firstPostOnWeek.click();
         wait.until(ExpectedConditions.urlToBe(firstPostLink));
+        wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.cssSelector("h2.crayons-story__title > a")));
         WebElement postTitle = driver.findElement(By.cssSelector("div.crayons-article__header__meta > h1"));
 
 
@@ -55,12 +56,14 @@ public class BaseTest {
     public void searchBarTesting() {
         WebElement searchBox = driver.findElement(By.id("nav-search"));
         highlightElement(driver, searchBox);
-        String searchText = "testing";
+        String searchText = "Testing";
         searchBox.sendKeys(searchText);
         searchBox.sendKeys(Keys.ENTER);
         String searchUrl = "https://dev.to/search?q=";
         String searchingUrlWithText = searchUrl + searchText;
         wait.until(ExpectedConditions.urlToBe(searchingUrlWithText));
+
+        wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.cssSelector("h2.crayons-story__title > a")));
         List<WebElement> postTilesList = driver.findElements(By.cssSelector("h2.crayons-story__title > a"));
 
 //        for(int i = 0; i<3; i++){
@@ -69,14 +72,44 @@ public class BaseTest {
 //
 //            assertTrue("there's no searching value in post tile", elementText.contains(searchText));
 //        }
+        int i = 0;
+        while (i<5){
+            highlightElement(driver, postTilesList.get(i));
+            i++;
+        }
 
-        WebElement element = postTilesList.get(0);
+
+
+        WebElement element = postTilesList.get(4);
         String elementText = element.getText();
         assertTrue("there's no searching value in post tile", elementText.contains(searchText));
+    }
+    @Test
+    public void findJavaInNavBar(){
+        WebElement java = driver.findElement(By.cssSelector(("div#default-sidebar-element-java > a")));
+        highlightElement(driver, java);
+        java.click();
+
+    }
+    @Test
+    public void findTutorialInNavBar(){
+        WebElement tutorial = driver.findElement(By.cssSelector(("div#default-sidebar-element-tutorial > a")));
+        highlightElement(driver, tutorial);
+        tutorial.click();
+        String tutorialUrl = "https://dev.to/t/tutorial";
+        wait.until(ExpectedConditions.urlToBe(tutorialUrl));
+        List<WebElement> tutorialList = driver.findElements(By.cssSelector("h2.crayons-story__title > a"));
+
+        int i = 0;
+        while (i<3){
+            highlightElement(driver, tutorialList.get(i));
+            i++;
+
     }
 
 
 
+}
 }
 
 
